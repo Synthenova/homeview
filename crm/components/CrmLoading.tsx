@@ -184,3 +184,32 @@ export function ChatDetailLoading() {
     </CrmShell>
   );
 }
+
+export function UsersLoading() {
+  return (
+    <CrmShell>
+      <header className="crm-topbar">
+        <div>
+          <p className="eyebrow">Access</p>
+          <div className="crm-skeleton-title medium" />
+        </div>
+        <SkeletonLine className="pill" />
+      </header>
+      <div className="crm-grid">
+        <section className="crm-panel">
+          <SkeletonPanelHeader titleWidth="short" />
+          <div className="crm-form" aria-hidden="true">
+            <SkeletonLine className="long" />
+            <SkeletonLine className="long" />
+            <SkeletonLine className="long" />
+            <SkeletonLine className="value" />
+          </div>
+        </section>
+        <section className="crm-panel">
+          <SkeletonPanelHeader titleWidth="short" />
+          <SkeletonTable rows={5} columns={4} />
+        </section>
+      </div>
+    </CrmShell>
+  );
+}
