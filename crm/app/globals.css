@@ -1,0 +1,607 @@
+:root {
+  --ink: #0b0b0a;
+  --muted: #62635f;
+  --line: #dcded8;
+  --paper: #fbfbf8;
+  --wash: #f4f5f1;
+  --olive: #687456;
+  --olive-deep: #526043;
+  --panel: rgba(255, 255, 255, 0.82);
+  --shadow: 0 24px 80px rgba(28, 30, 26, 0.1);
+}
+
+* {
+  box-sizing: border-box;
+}
+
+html,
+body {
+  min-height: 100%;
+  margin: 0;
+}
+
+body {
+  color: var(--ink);
+  background:
+    radial-gradient(circle at 50% 0, rgba(218, 220, 214, 0.36), transparent 34rem),
+    linear-gradient(180deg, #ffffff 0%, var(--paper) 48%, #ffffff 100%);
+  font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
+  letter-spacing: 0;
+}
+
+body::before {
+  position: fixed;
+  inset: 0;
+  z-index: -2;
+  content: "";
+  background-image: radial-gradient(#d6d9d0 0.65px, transparent 0.65px);
+  background-position: 50% 92px;
+  background-size: 16px 16px;
+  opacity: 0.28;
+  pointer-events: none;
+}
+
+a {
+  color: inherit;
+  text-decoration: none;
+}
+
+button,
+input,
+select,
+textarea {
+  font: inherit;
+}
+
+.crm-shell {
+  display: grid;
+  grid-template-columns: 260px minmax(0, 1fr);
+  min-height: 100vh;
+}
+
+.crm-sidebar {
+  display: flex;
+  flex-direction: column;
+  gap: 34px;
+  padding: 28px;
+  color: #f8faf5;
+  background: #10120f;
+  border-right: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+.crm-sidebar h1,
+.crm-topbar h2,
+.crm-panel h3 {
+  margin: 6px 0 0;
+  font-weight: 400;
+  letter-spacing: -0.05em;
+}
+
+.crm-sidebar h1 {
+  font-size: 42px;
+}
+
+.crm-sidebar nav {
+  display: grid;
+  gap: 8px;
+}
+
+.crm-sidebar a {
+  padding: 11px 12px;
+  color: #d8dbd1;
+  border-radius: 8px;
+}
+
+.crm-sidebar a:hover {
+  color: #fff;
+  background: rgba(255, 255, 255, 0.1);
+}
+
+.crm-content {
+  display: grid;
+  align-content: start;
+  gap: 24px;
+  padding: 32px;
+}
+
+.crm-topbar,
+.panel-head {
+  display: flex;
+  gap: 20px;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.crm-topbar h2 {
+  font-size: clamp(42px, 5vw, 72px);
+  line-height: 0.95;
+}
+
+.eyebrow {
+  margin: 0;
+  color: #70736c;
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.12em;
+  line-height: 1;
+  text-transform: uppercase;
+}
+
+.crm-sidebar .eyebrow {
+  color: #aeb4a8;
+}
+
+.crm-stats {
+  display: grid;
+  gap: 16px;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+}
+
+.crm-stat,
+.crm-panel {
+  background: var(--panel);
+  border: 1px solid rgba(220, 222, 216, 0.92);
+  border-radius: 8px;
+  box-shadow: var(--shadow);
+  backdrop-filter: blur(16px);
+}
+
+.crm-stat {
+  display: grid;
+  gap: 10px;
+  padding: 18px;
+}
+
+.crm-stat svg {
+  color: var(--olive-deep);
+}
+
+.crm-stat span {
+  color: var(--muted);
+  font-size: 13px;
+}
+
+.crm-stat strong {
+  font-size: 28px;
+  font-weight: 500;
+}
+
+.crm-grid {
+  display: grid;
+  grid-template-columns: minmax(0, 1.2fr) minmax(320px, 0.8fr);
+  gap: 20px;
+}
+
+.crm-panel {
+  display: grid;
+  gap: 18px;
+  min-width: 0;
+  padding: 22px;
+}
+
+.panel-head h3 {
+  font-size: 24px;
+}
+
+.panel-head a,
+.crm-pill {
+  display: inline-flex;
+  align-items: center;
+  min-height: 32px;
+  padding: 0 11px;
+  color: var(--olive-deep);
+  background: #eef2e8;
+  border: 1px solid #d7ddcf;
+  border-radius: 999px;
+  font-size: 12px;
+  font-weight: 700;
+}
+
+.crm-table {
+  display: grid;
+  overflow: hidden;
+  border: 1px solid var(--line);
+  border-radius: 8px;
+}
+
+.crm-row {
+  display: grid;
+  grid-template-columns: minmax(0, 1.4fr) minmax(90px, 0.5fr) minmax(90px, 0.5fr) minmax(90px, 0.4fr);
+  gap: 12px;
+  align-items: center;
+  min-height: 48px;
+  padding: 11px 13px;
+  background: rgba(255, 255, 255, 0.68);
+  border-bottom: 1px solid var(--line);
+  font-size: 13px;
+}
+
+button.crm-row {
+  width: 100%;
+  color: inherit;
+  text-align: left;
+  border-top: 0;
+  border-right: 0;
+  border-left: 0;
+  cursor: pointer;
+}
+
+.crm-row:last-child {
+  border-bottom: 0;
+}
+
+.crm-row:hover {
+  background: #fff;
+}
+
+.crm-row span {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.crm-row strong {
+  display: inline;
+  font-weight: 600;
+}
+
+.crm-row em {
+  display: inline-flex;
+  margin-left: 8px;
+  padding: 3px 7px;
+  color: var(--olive-deep);
+  background: #eef2e8;
+  border: 1px solid #d7ddcf;
+  border-radius: 999px;
+  font-size: 11px;
+  font-style: normal;
+  font-weight: 700;
+  vertical-align: middle;
+}
+
+.contact-table .contact-row {
+  grid-template-columns:
+    minmax(160px, 1.05fr)
+    minmax(150px, 0.85fr)
+    minmax(110px, 0.6fr)
+    minmax(180px, 1.25fr)
+    minmax(80px, 0.4fr);
+}
+
+.crm-empty {
+  padding: 18px;
+  color: var(--muted);
+  background: rgba(255, 255, 255, 0.68);
+  font-size: 13px;
+}
+
+.crm-modal-backdrop {
+  position: fixed;
+  inset: 0;
+  z-index: 1000;
+  background: transparent;
+}
+
+.crm-modal {
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  display: grid;
+  gap: 20px;
+  width: min(820px, 100%);
+  max-height: calc(100svh - 48px);
+  overflow: auto;
+  padding: 26px;
+  background: #fbfbf8;
+  border: 1px solid rgba(220, 222, 216, 0.96);
+  border-radius: 10px;
+  box-shadow: none;
+  transform: translate(-50%, -50%);
+}
+
+.crm-modal header {
+  display: flex;
+  gap: 18px;
+  align-items: flex-start;
+  justify-content: space-between;
+}
+
+.crm-modal h3 {
+  margin: 6px 0 0;
+  font-size: 30px;
+  font-weight: 400;
+  letter-spacing: -0.05em;
+}
+
+.crm-modal header button {
+  min-height: 34px;
+  padding: 0 12px;
+  color: var(--ink);
+  background: #fff;
+  border: 1px solid var(--line);
+  border-radius: 999px;
+  cursor: pointer;
+}
+
+.contact-detail-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 12px;
+  margin: 0;
+}
+
+.contact-detail-grid div,
+.contact-message {
+  padding: 13px;
+  background: #fff;
+  border: 1px solid var(--line);
+  border-radius: 8px;
+}
+
+.contact-detail-grid dt {
+  margin: 0 0 6px;
+  color: var(--muted);
+  font-size: 11px;
+  font-weight: 700;
+  text-transform: uppercase;
+}
+
+.contact-detail-grid dd {
+  margin: 0;
+  font-size: 14px;
+  line-height: 1.4;
+}
+
+.contact-message {
+  display: grid;
+  gap: 12px;
+}
+
+.contact-request-list {
+  display: grid;
+  gap: 12px;
+}
+
+.contact-message header {
+  display: flex;
+  gap: 14px;
+  align-items: flex-start;
+  justify-content: space-between;
+}
+
+.contact-message h4 {
+  margin: 4px 0 0;
+  font-size: 15px;
+  font-weight: 650;
+}
+
+.contact-message header span {
+  flex: 0 0 auto;
+  padding: 4px 8px;
+  color: var(--olive-deep);
+  background: #eef2e8;
+  border: 1px solid #d7ddcf;
+  border-radius: 999px;
+  font-size: 11px;
+  font-weight: 700;
+}
+
+.contact-request-meta {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 10px;
+  margin: 0;
+}
+
+.contact-request-meta div {
+  padding: 10px;
+  background: #f7f8f3;
+  border: 1px solid var(--line);
+  border-radius: 7px;
+}
+
+.contact-request-meta dt {
+  margin: 0 0 5px;
+  color: var(--muted);
+  font-size: 10px;
+  font-weight: 700;
+  text-transform: uppercase;
+}
+
+.contact-request-meta dd {
+  margin: 0;
+  font-size: 13px;
+}
+
+.contact-message > p:last-child {
+  margin: 0;
+  color: #2d302b;
+  font-size: 15px;
+  line-height: 1.62;
+  white-space: pre-wrap;
+}
+
+.crm-transcript {
+  display: grid;
+  gap: 12px;
+}
+
+.crm-message {
+  display: grid;
+  gap: 8px;
+  max-width: 86%;
+  padding: 13px 14px;
+  border-radius: 14px;
+  font-size: 14px;
+  line-height: 1.45;
+}
+
+.crm-message span {
+  color: var(--muted);
+  font-size: 11px;
+  font-weight: 700;
+  text-transform: uppercase;
+}
+
+.crm-message p {
+  margin: 0;
+}
+
+.crm-message.user {
+  justify-self: end;
+  color: #fff;
+  background: #11120f;
+}
+
+.crm-message.user span {
+  color: #cfd3c8;
+}
+
+.crm-message.assistant,
+.crm-message.system {
+  justify-self: start;
+  background: #fff;
+  border: 1px solid var(--line);
+}
+
+.crm-skeleton-line,
+.crm-skeleton-title,
+.crm-skeleton-icon {
+  display: block;
+  overflow: hidden;
+  background: linear-gradient(90deg, #e7e9e1 0%, #f9faf6 42%, #e7e9e1 84%);
+  background-size: 240% 100%;
+  animation: crm-skeleton-sheen 1.25s ease-in-out infinite;
+}
+
+.crm-skeleton-line {
+  width: 74%;
+  height: 13px;
+  border-radius: 999px;
+}
+
+.crm-skeleton-line.short {
+  width: 38%;
+}
+
+.crm-skeleton-line.medium {
+  width: 58%;
+}
+
+.crm-skeleton-line.long {
+  width: 88%;
+}
+
+.crm-skeleton-line.label {
+  width: 74px;
+  height: 10px;
+}
+
+.crm-skeleton-line.value {
+  width: 92px;
+  height: 28px;
+}
+
+.crm-skeleton-line.pill {
+  width: 86px;
+  height: 32px;
+}
+
+.crm-skeleton-title {
+  height: clamp(42px, 5vw, 70px);
+  margin-top: 9px;
+  border-radius: 10px;
+}
+
+.crm-skeleton-title.wide {
+  width: min(560px, 72vw);
+}
+
+.crm-skeleton-title.medium {
+  width: min(420px, 62vw);
+}
+
+.crm-skeleton-icon {
+  width: 22px;
+  height: 22px;
+  border-radius: 7px;
+}
+
+.crm-skeleton-stat {
+  min-height: 128px;
+}
+
+.crm-skeleton-row .crm-skeleton-line {
+  max-width: 100%;
+}
+
+.crm-message-skeleton {
+  min-height: 84px;
+}
+
+.crm-message-skeleton.short {
+  min-height: 66px;
+}
+
+.crm-message-skeleton.long {
+  min-height: 116px;
+}
+
+.crm-message-skeleton.user .crm-skeleton-line {
+  background: linear-gradient(90deg, #2d312a 0%, #555a50 42%, #2d312a 84%);
+  background-size: 240% 100%;
+}
+
+.crm-transcript-loading .crm-message-skeleton:nth-child(2) {
+  max-width: 78%;
+}
+
+.crm-transcript-loading .crm-message-skeleton:nth-child(3) {
+  max-width: 62%;
+}
+
+@keyframes crm-skeleton-sheen {
+  0% {
+    background-position: 120% 0;
+  }
+
+  100% {
+    background-position: -120% 0;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .crm-skeleton-line,
+  .crm-skeleton-title,
+  .crm-skeleton-icon {
+    animation: none;
+  }
+}
+
+@media (max-width: 960px) {
+  .crm-shell,
+  .crm-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .crm-stats {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+@media (max-width: 620px) {
+  .crm-content {
+    padding: 20px;
+  }
+
+  .crm-stats,
+  .crm-row {
+    grid-template-columns: 1fr;
+  }
+
+  .contact-table .contact-row,
+  .contact-request-meta,
+  .contact-detail-grid {
+    grid-template-columns: 1fr;
+  }
+}

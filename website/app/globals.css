@@ -1540,8 +1540,8 @@ main,
   right: 0;
   bottom: 64px;
   display: grid;
-  grid-template-rows: auto auto 1fr auto;
-  width: min(410px, calc(100vw - 32px));
+  grid-template-rows: auto auto 1fr;
+  width: min(680px, calc(100vw - 32px));
   height: min(620px, calc(100svh - 112px));
   overflow: hidden;
   border: 1px solid rgba(217, 220, 211, 0.94);
@@ -1588,7 +1588,8 @@ main,
   padding: 14px 20px;
 }
 
-.chat-actions a {
+.chat-actions a,
+.chat-actions button {
   display: inline-flex;
   gap: 7px;
   align-items: center;
@@ -1597,7 +1598,78 @@ main,
   border: 1px solid #d1d5cc;
   border-radius: 999px;
   background: #fff;
+  color: var(--ink);
   font-size: 12px;
+  cursor: pointer;
+}
+
+.chat-actions button:disabled {
+  opacity: 0.45;
+  cursor: wait;
+}
+
+.chat-workspace {
+  display: grid;
+  grid-template-columns: 210px minmax(0, 1fr);
+  min-height: 0;
+}
+
+.chat-list {
+  display: grid;
+  align-content: start;
+  gap: 8px;
+  min-height: 0;
+  overflow: auto;
+  padding: 12px;
+  border-right: 1px solid var(--line);
+}
+
+.chat-list p {
+  margin: 0;
+  color: var(--muted);
+  font-size: 12px;
+}
+
+.chat-list button {
+  display: grid;
+  gap: 5px;
+  width: 100%;
+  padding: 10px;
+  text-align: left;
+  background: rgba(255, 255, 255, 0.58);
+  border: 1px solid transparent;
+  border-radius: 8px;
+  cursor: pointer;
+}
+
+.chat-list button.is-active,
+.chat-list button:hover {
+  background: #fff;
+  border-color: #dfe3da;
+}
+
+.chat-list strong {
+  overflow: hidden;
+  font-size: 12px;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.chat-list span {
+  display: -webkit-box;
+  overflow: hidden;
+  color: var(--muted);
+  font-size: 11px;
+  line-height: 1.35;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 2;
+}
+
+.chat-thread {
+  display: grid;
+  grid-template-rows: 1fr auto;
+  min-width: 0;
+  min-height: 0;
 }
 
 .chat-messages {
@@ -1647,6 +1719,31 @@ main,
   color: #fff;
   background: #090908;
   border-radius: 50%;
+}
+
+.chat-error {
+  display: flex;
+  gap: 10px;
+  align-items: center;
+  justify-content: space-between;
+  padding: 10px 12px;
+  color: #7f221c;
+  background: #fff4f2;
+  border: 1px solid #f0c9c4;
+  border-radius: 8px;
+  font-size: 12px;
+}
+
+.chat-error button {
+  display: inline-flex;
+  gap: 6px;
+  align-items: center;
+  min-height: 28px;
+  padding: 0 9px;
+  background: #fff;
+  border: 1px solid #e5b9b3;
+  border-radius: 999px;
+  cursor: pointer;
 }
 
 @media (prefers-reduced-motion: reduce) {

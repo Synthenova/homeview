@@ -1,7 +1,9 @@
+import { fileURLToPath } from "node:url";
+
 /** @type {import('next').NextConfig} */
 const nextConfig = {
   turbopack: {
-    root: "/Users/sachinsmac/Documents/GitHub/Homeview"
+    root: fileURLToPath(new URL("..", import.meta.url))
   },
   images: {
     unoptimized: true

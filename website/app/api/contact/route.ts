@@ -1,5 +1,5 @@
 import { NextResponse } from "next/server";
-import { contactEmail } from "@/lib/site";
+import { ensureSession, saveContactQuery } from "@/lib/chat-store";
 
 export async function POST(request: Request) {
   const body = await request.json().catch(() => null);
@@ -8,9 +8,16 @@ export async function POST(request: Request) {
     return NextResponse.json({ error: "Email and message are required." }, { status: 400 });
   }
 
-  // Replace this with Resend, Postmark, or a CRM webhook when production mail is connected.
-  console.log("Homeview contact request", {
-    to: contactEmail,
+  if (body.sessionId) {
+    await ensureSession({
+      sessionId: body.sessionId,
+      userAgent: request.headers.get("user-agent"),
+      referrer: request.headers.get("referer")
+    });
+  }
+
+  await saveContactQuery({
+    sessionId: body.sessionId,
     name: body.name,
     email: body.email,
     projectType: body.projectType,

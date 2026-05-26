@@ -2,6 +2,7 @@
 
 import { FormEvent, useState } from "react";
 import { contactEmail } from "@/lib/site";
+import { getStoredSessionId } from "@/lib/browser-session";
 
 type FormState = "idle" | "submitting" | "sent" | "error";
 
@@ -13,9 +14,13 @@ export function ContactForm() {
     setState("submitting");
     const form = event.currentTarget;
     const formData = new FormData(form);
+    const payload = {
+      ...Object.fromEntries(formData),
+      sessionId: getStoredSessionId()
+    };
     const response = await fetch("/api/contact", {
       method: "POST",
-      body: JSON.stringify(Object.fromEntries(formData)),
+      body: JSON.stringify(payload),
       headers: { "Content-Type": "application/json" }
     });
 

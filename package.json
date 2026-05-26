@@ -1,34 +1,19 @@
 {
-  "name": "homeview",
+  "name": "homeview-platform",
   "version": "1.0.0",
   "private": true,
+  "workspaces": [
+    "website",
+    "crm"
+  ],
   "scripts": {
-    "dev": "next dev",
-    "build": "next build",
-    "start": "next start",
-    "lint": "next lint"
-  },
-  "keywords": [],
-  "author": "",
-  "license": "ISC",
-  "description": "",
-  "dependencies": {
-    "@ai-sdk/openai": "^3.0.64",
-    "@calcom/embed-react": "^1.5.3",
-    "ai": "^6.0.183",
-    "gsap": "^3.15.0",
-    "lucide-react": "^1.16.0",
-    "next": "^16.2.6",
-    "playcanvas": "^2.18.1",
-    "react": "^19.2.6",
-    "react-dom": "^19.2.6"
-  },
-  "devDependencies": {
-    "@types/node": "^25.8.0",
-    "@types/react": "^19.2.14",
-    "@types/react-dom": "^19.2.3",
-    "eslint": "^9.39.4",
-    "eslint-config-next": "^16.2.6",
-    "typescript": "^6.0.3"
+    "dev:website": "npm run dev --workspace website",
+    "build:website": "npm run build --workspace website",
+    "dev:crm": "npm run dev --workspace crm",
+    "build:crm": "npm run build --workspace crm",
+    "db:migrate": "node --env-file=.env scripts/migrate.mjs",
+    "test:ai-gateway": "npm run test:ai-gateway --workspace website",
+    "smoke:all": "npm run smoke:all --workspace website",
+    "smoke:http": "node --env-file=.env scripts/smoke-website-http.mjs"
   }
 }
