@@ -1,6 +1,5 @@
 "use client";
 
-import Image from "next/image";
 import { useEffect, useRef, useState } from "react";
 
 declare global {
@@ -13,6 +12,39 @@ export function PlayCanvasViewer() {
   const [launched, setLaunched] = useState(false);
   const [status, setStatus] = useState("Click to load the interactive walkthrough.");
   const canvasRef = useRef<HTMLCanvasElement | null>(null);
+  const previewVideoRef = useRef<HTMLVideoElement | null>(null);
+
+  useEffect(() => {
+    if (launched) return;
+
+    const video = previewVideoRef.current;
+    const shell = video?.closest(".viewer-shell");
+    if (!video || !shell) return;
+
+    const playPreview = () => {
+      void video.play().catch(() => {});
+    };
+
+    const observer = new IntersectionObserver(
+      ([entry]) => {
+        if (entry?.isIntersecting) {
+          playPreview();
+          return;
+        }
+
+        video.pause();
+      },
+      { threshold: 0.2 }
+    );
+
+    observer.observe(shell);
+
+    if (shell.getBoundingClientRect().top < window.innerHeight * 0.9) {
+      playPreview();
+    }
+
+    return () => observer.disconnect();
+  }, [launched]);
 
   useEffect(() => {
     if (!launched || !canvasRef.current) return;
@@ -87,18 +119,19 @@ export function PlayCanvasViewer() {
   }, [launched]);
 
   return (
-    <div className="viewer-shell playcanvas-shell" id="demo">
+    <div className="viewer-shell playcanvas-shell" id="demo" data-animate-skip>
       {!launched ? (
         <>
-          <Image
-            className="viewer-image"
-            src="/images/06-sample_home_viewer_image.png"
-            alt="Interactive view of a bright open-plan living room"
-            width={786}
-            height={318}
-            priority
+          <video
+            ref={previewVideoRef}
+            className="viewer-preview-video"
+            src="/interactive-demo-short.mp4"
+            loop
+            muted
+            playsInline
+            preload="auto"
+            aria-hidden="true"
           />
-          <ViewerOverlay />
           <button className="demo-launch-button" type="button" onClick={() => setLaunched(true)}>
             Launch interactive demo
           </button>
@@ -134,44 +167,4 @@ function loadPlayCanvas() {
     script.onerror = () => reject(new Error("PlayCanvas failed to load"));
     document.head.appendChild(script);
   });
-}
-
-function ViewerOverlay() {
-  return (
-    <>
-      <aside className="viewer-map" aria-label="Floor selector">
-        <div className="map-title">
-          <span>Ground floor</span>
-          <span aria-hidden="true">⌄</span>
-        </div>
-        <Image src="/images/07-sample_home_floorplan_minimap.png" alt="Ground floor minimap" width={115} height={119} />
-        <ul>
-          <li>Rooftop</li>
-          <li>First floor</li>
-          <li className="is-active">Ground floor</li>
-          <li>Basement</li>
-        </ul>
-      </aside>
-      <div className="pin pin-a" aria-label="Room marker" />
-      <div className="pin pin-b" aria-label="Room marker" />
-      <div className="pin pin-c" aria-label="Living room marker"><span>Living room</span></div>
-      <div className="viewer-share"><span aria-hidden="true">⇧</span><span>Share</span></div>
-      <div className="viewer-controls" aria-label="Viewer controls">
-        <button type="button" aria-label="Previous">←</button>
-        <button type="button" className="pause" aria-label="Pause">Ⅱ</button>
-        <button type="button" aria-label="Next">→</button>
-      </div>
-      <div className="tool-controls" aria-label="Viewer tools">
-        <button type="button" aria-label="3D model">◇</button>
-        <button type="button" aria-label="Measure">╱</button>
-        <button type="button" aria-label="Fullscreen">⌜</button>
-      </div>
-      <div className="zoom-controls" aria-label="Zoom controls">
-        <button type="button" aria-label="Compass">✦</button>
-        <button type="button" aria-label="Zoom in">+</button>
-        <button type="button" aria-label="Zoom out">−</button>
-        <button type="button" aria-label="Layers">▱</button>
-      </div>
-    </>
-  );
 }

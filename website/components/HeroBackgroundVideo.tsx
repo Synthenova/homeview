@@ -37,7 +37,7 @@ export function HeroBackgroundVideo() {
   }, []);
 
   return (
-    <div className="hero-video-wrap" aria-hidden="true">
+    <div className="hero-video-wrap" aria-hidden="true" data-animate-skip>
       <video
         ref={videoRef}
         className="hero-video"

@@ -240,7 +240,7 @@ export function Chatbot() {
     <div className="chatbot-root">
       <button className="chat-launcher" onClick={openModal} aria-label="Open Homeview assistant">
         <MessageCircle size={22} />
-        <span>Ask Homeview</span>
+        <span>Ask Homie</span>
       </button>
 
       {open ? (

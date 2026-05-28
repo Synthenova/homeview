@@ -5,6 +5,8 @@ import { BlogSlider } from "@/components/BlogSlider";
 import { CalEmbed } from "@/components/CalEmbed";
 import { HeroBackgroundVideo } from "@/components/HeroBackgroundVideo";
 import { PlayCanvasViewer } from "@/components/PlayCanvasViewer";
+import { ProofTestimonialCarousel } from "@/components/ProofTestimonialCarousel";
+import { UseCaseFeaturedCard } from "@/components/UseCaseFeaturedCard";
 
 export default function HomePage() {
   return (
@@ -14,8 +16,8 @@ export default function HomePage() {
         <div className="hero-copy" data-animate>
           <h1>Your property, rebuilt as a 3D place</h1>
           <p>Scan any space. We turn it into a precise, explorable 3D model you can share.</p>
-          <Link className="button button-dark hero-cta" href="/contact">
-            <span>Get quote</span>
+          <Link className="button button-dark hero-cta" href="/#examples">
+            <span>Try Demo</span>
             <span aria-hidden="true">↗</span>
           </Link>
           <div className="trust-row" aria-label="Trusted by property pros and homeowners">
@@ -29,18 +31,17 @@ export default function HomePage() {
         <div className="audience-band" aria-label="Built for" data-animate>
           <div className="audience-intro">
             <p className="eyebrow">Built for</p>
-            <h2>Real estate, architecture, construction, and beyond.</h2>
+            <h2>Real Estate, AirBNB, Insurance, Rental.</h2>
           </div>
           <div className="audience-grid">
             {[
-              ["home-icon", "Real estate", "List and market with confidence"],
-              ["cube-icon", "Architecture", "Document and present ideas"],
-              ["helmet-icon", "Construction", "Track progress on site"],
+              ["home-icon", "Real Estate", "List and market with confidence"],
+              ["user-icon", "AirBNB", "Show guests exactly what they are booking"],
               ["shield-icon", "Insurance", "Assess and record accurately"],
-              ["user-icon", "Homeowners", "Keep a digital record of your home"]
+              ["cube-icon", "Rental", "Document units and handoffs clearly"]
             ].map(([icon, title, copy]) => (
               <article key={title}>
-                <span className={`line-icon ${icon}`} aria-hidden="true" />
+                <AudienceIcon name={icon} />
                 <h3>{title}</h3>
                 <p>{copy}</p>
               </article>
@@ -58,8 +59,8 @@ export default function HomePage() {
               image="/images/03-how_it_works_01_plan_stack.png"
               alt="Stacked architectural plan sheets"
               className="plan-stack"
-              width={140}
-              height={117}
+              width={203}
+              height={152}
             />
             <WorkflowCard
               number="02"
@@ -68,8 +69,8 @@ export default function HomePage() {
               image="/images/04-how_it_works_02_room_capture.png"
               alt="A cutaway room being captured in 3D"
               className="room-capture"
-              width={223}
-              height={122}
+              width={270}
+              height={206}
             />
             <article className="workflow-card share-card">
               <div className="workflow-heading">
@@ -87,7 +88,7 @@ export default function HomePage() {
                   </div>
                   <button type="button">Copy link</button>
                 </div>
-                <Image src="/images/05-how_it_works_03_share_preview_photo.png" alt="Modern living room preview inside a share card" width={167} height={57} />
+                <Image src="/images/05-how_it_works_03_share_preview_photo.png" alt="Modern living room preview inside a share card" width={235} height={80} />
               </div>
             </article>
           </div>
@@ -107,17 +108,24 @@ export default function HomePage() {
           <h2>One scan, many decisions.</h2>
         </div>
         <div className="use-case-grid" data-animate>
-          <article className="use-card large-use">
-            <span>01</span>
-            <h3>Real estate virtual tours</h3>
-            <p>Replace flat listing galleries with a measured 3D home tour buyers can inspect before visiting.</p>
+          <UseCaseFeaturedCard />
+          <article className="use-card use-card--accent use-card--airbnb">
+            <div className="use-card-accent" aria-hidden="true" />
+            <span>02</span>
+            <h3>AirBNB</h3>
+            <p>Show guests exactly what they are booking.</p>
           </article>
-          <article className="use-card"><span>02</span><h3>Architecture review</h3><p>Share room context, layout constraints, and design direction with clients before a site visit.</p></article>
-          <article className="use-card"><span>03</span><h3>Construction records</h3><p>Capture progress across rooms, floors, and handoff stages with one visual source of truth.</p></article>
-          <article className="use-card"><span>04</span><h3>Insurance documentation</h3><p>Keep an accurate visual record of finishes, dimensions, fixtures, and room conditions.</p></article>
-          <article className="use-card image-use">
-            <Image src="/images/11-stats_room_thumbnail.png" alt="A captured room preview from a 3D property model" width={112} height={54} />
-            <p>Built for searchable property documentation, remote walkthroughs, and reusable visual records.</p>
+          <article className="use-card use-card--accent use-card--insurance">
+            <div className="use-card-accent" aria-hidden="true" />
+            <span>03</span>
+            <h3>Insurance</h3>
+            <p>Assess and record accurately.</p>
+          </article>
+          <article className="use-card use-card--accent use-card--rental">
+            <div className="use-card-accent" aria-hidden="true" />
+            <span>04</span>
+            <h3>Rental</h3>
+            <p>Document units and handoffs clearly.</p>
           </article>
         </div>
       </AnimatedSection>
@@ -129,11 +137,7 @@ export default function HomePage() {
           <p>Homeview gives every stakeholder the same visual context, from first listing photos to post-project documentation.</p>
         </div>
         <div className="proof-panel" data-animate>
-          <blockquote>“We stopped sending ten separate photo folders. The 3D model became the shared reference for the property.”</blockquote>
-          <div className="proof-author">
-            <Image src="/images/02-trust_avatar_group.png" alt="Homeview customer avatars" width={83} height={28} />
-            <span>Property teams, architects, and homeowners</span>
-          </div>
+          <ProofTestimonialCarousel />
         </div>
         <div className="proof-list" aria-label="Homeview benefits" data-animate>
           <div><strong>Measured context</strong><span>Rooms, plans, and visual records stay connected.</span></div>
@@ -143,31 +147,6 @@ export default function HomePage() {
       </AnimatedSection>
 
       <BlogSlider />
-
-      <AnimatedSection className="plans-suite section-page" id="plans" aria-label="Plans and Homeview metrics">
-        <div className="pricing-section" aria-label="Plans that fit your project" data-animate>
-          <p className="eyebrow">Plans that fit your project</p>
-          <div className="pricing-grid">
-            <PriceCard title="Starter" copy="For simple homes and personal use." price="$19" image="/images/08-pricing_starter_3d_model.png" alt="Starter plan 3D home model" />
-            <PriceCard title="Pro" copy="For professionals who need more." price="$59" image="/images/09-pricing_pro_3d_model.png" alt="Pro plan detailed 3D property model" featured />
-            <PriceCard title="Team" copy="For teams and large projects." price="$199" image="/images/10-pricing_team_3d_model.png" alt="Team plan large 3D home model" team />
-          </div>
-          <div className="plan-includes" aria-label="All plans include">
-            <span>All plans include:</span>
-            <span>✓ Unlimited views</span>
-            <span>✓ High-resolution exports</span>
-            <span>✓ Measurements</span>
-            <span>✓ Secure sharing</span>
-          </div>
-        </div>
-        <div className="metrics-strip" aria-label="Homeview metrics" data-animate>
-          <div><strong>12k+</strong><span>Projects created</span></div>
-          <div><strong>8M+</strong><span>Rooms scanned</span></div>
-          <div><strong>195</strong><span>Countries</span></div>
-          <div><strong>99.9%</strong><span>Uptime</span></div>
-          <Image src="/images/11-stats_room_thumbnail.png" alt="Small 3D room thumbnail" width={112} height={54} />
-        </div>
-      </AnimatedSection>
 
       <AnimatedSection className="faq-section section-page" id="questions" aria-label="Frequently asked questions">
         <div className="section-kicker" data-animate>
@@ -230,33 +209,6 @@ function WorkflowCard(props: {
   );
 }
 
-function PriceCard(props: {
-  title: string;
-  copy: string;
-  price: string;
-  image: string;
-  alt: string;
-  featured?: boolean;
-  team?: boolean;
-}) {
-  return (
-    <article className={`price-card ${props.featured ? "is-featured" : ""} ${props.team ? "team-card" : ""}`}>
-      <div>
-        {props.featured ? <span className="popular">Most popular</span> : null}
-        <h2>{props.title}</h2>
-        <p>{props.copy}</p>
-      </div>
-      <Image src={props.image} alt={props.alt} width={180} height={160} />
-      <div className="price-bottom">
-        <p><strong>{props.price}</strong> / month</p>
-        <Link className={`button ${props.featured ? "button-olive" : "button-outline"}`} href="/contact">
-          Get quote <span aria-hidden="true">↗</span>
-        </Link>
-      </div>
-    </article>
-  );
-}
-
 function FAQ({ title, copy }: { title: string; copy: string }) {
   return (
     <article>
@@ -264,4 +216,40 @@ function FAQ({ title, copy }: { title: string; copy: string }) {
       <p>{copy}</p>
     </article>
   );
+}
+
+function AudienceIcon({ name }: { name: string }) {
+  const strokeWidth = "1.25";
+  switch (name) {
+    case "home-icon":
+      return (
+        <svg className="line-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={strokeWidth} strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+          <path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z" />
+          <polyline points="9 22 9 12 15 12 15 22" />
+        </svg>
+      );
+    case "user-icon":
+      return (
+        <svg className="line-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={strokeWidth} strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+          <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2" />
+          <circle cx="12" cy="7" r="4" />
+        </svg>
+      );
+    case "shield-icon":
+      return (
+        <svg className="line-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={strokeWidth} strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+          <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z" />
+        </svg>
+      );
+    case "cube-icon":
+      return (
+        <svg className="line-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={strokeWidth} strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+          <path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z" />
+          <polyline points="3.27 6.96 12 12.01 20.73 6.96" />
+          <line x1="12" y1="22.08" x2="12" y2="12" />
+        </svg>
+      );
+    default:
+      return null;
+  }
 }
