@@ -2,9 +2,17 @@
 
 import { FormEvent, useState } from "react";
 import { contactEmail } from "@/lib/site";
-import { getStoredSessionId } from "@/lib/browser-session";
+import { ensureStoredSessionId } from "@/lib/browser-session";
 
-type FormState = "idle" | "submitting" | "sent" | "error";
+type FormState = "idle" | "submitting" | "error";
+type ContactResponse = {
+  ok: true;
+  sessionId: string;
+  chatId: string;
+  prompt: string;
+};
+
+export const CONTACT_SUBMITTED_EVENT = "homeview:contact-submitted";
 
 export function ContactForm() {
   const [state, setState] = useState<FormState>("idle");
@@ -14,20 +22,49 @@ export function ContactForm() {
     setState("submitting");
     const form = event.currentTarget;
     const formData = new FormData(form);
-    const payload = {
-      ...Object.fromEntries(formData),
-      sessionId: getStoredSessionId()
-    };
-    const response = await fetch("/api/contact", {
-      method: "POST",
-      body: JSON.stringify(payload),
-      headers: { "Content-Type": "application/json" }
-    });
+    const email = String(formData.get("email") ?? "").trim();
+    const projectType = String(formData.get("projectType") ?? "").trim();
+    const message = String(formData.get("message") ?? "").trim();
 
-    if (response.ok) {
+    try {
+      const sessionId = await ensureStoredSessionId({
+        email,
+        landingPage: window.location.pathname
+      });
+      const payload = {
+        ...Object.fromEntries(formData),
+        sessionId
+      };
+
+      const response = await fetch("/api/contact", {
+        method: "POST",
+        body: JSON.stringify(payload),
+        headers: { "Content-Type": "application/json" }
+      });
+
+      if (!response.ok) {
+        setState("error");
+        return;
+      }
+
+      const chatResponse = await fetch(`/api/sessions/${sessionId}/chats`, { method: "POST" });
+      if (!chatResponse.ok) {
+        setState("error");
+        return;
+      }
+
+      const { chatId } = (await chatResponse.json()) as { chatId: string };
+      const detail: ContactResponse = {
+        ok: true,
+        sessionId,
+        chatId,
+        prompt: `Project type: ${projectType}\nMessage: ${message}`
+      };
+
       form.reset();
-      setState("sent");
-    } else {
+      window.dispatchEvent(new CustomEvent<ContactResponse>(CONTACT_SUBMITTED_EVENT, { detail }));
+      setState("idle");
+    } catch {
       setState("error");
     }
   }
@@ -65,7 +102,6 @@ export function ContactForm() {
         <span>{state === "submitting" ? "Sending..." : "Contact us"}</span>
         <span aria-hidden="true">↗</span>
       </button>
-      {state === "sent" ? <p className="form-note">Request received. We will reply by email.</p> : null}
       {state === "error" ? <p className="form-note error-note">Something failed. Email us at {contactEmail}.</p> : null}
     </form>
   );

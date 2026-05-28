@@ -1,8 +1,11 @@
-import { createSessionId, ensureSession } from "@/lib/chat-store";
+import { createSessionId, ensureSession, findSessionIdByEmail } from "@/lib/chat-store";
 
 export async function POST(request: Request) {
   const body = await request.json().catch(() => ({}));
-  const sessionId = body.sessionId || createSessionId();
+  const sessionId =
+    (body.email ? await findSessionIdByEmail(body.email) : null) ||
+    body.sessionId ||
+    createSessionId();
 
   await ensureSession({
     sessionId,

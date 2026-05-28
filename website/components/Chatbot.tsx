@@ -2,28 +2,22 @@
 
 import { FormEvent, useEffect, useMemo, useRef, useState } from "react";
 import { useChat, type UIMessage } from "@ai-sdk/react";
-import { Calendar, Mail, MessageCircle, Plus, RotateCcw, Send, X } from "lucide-react";
+import { Calendar, Mail, MessageCircle, RotateCcw, Send, X } from "lucide-react";
 import { DefaultChatTransport } from "ai";
-import {
-  getStoredActiveChatId,
-  getStoredSessionId,
-  setStoredActiveChatId,
-  setStoredSessionId
-} from "@/lib/browser-session";
-import { calUrl } from "@/lib/site";
-
-type ChatSummary = {
-  id: string;
-  title: string;
-  status: string;
-  messageCount: number;
-  lastMessagePreview: string | null;
-  updatedAt: string;
-};
+import { usePathname, useRouter } from "next/navigation";
+import { getStoredSessionId, setStoredSessionId } from "@/lib/browser-session";
+import { CONTACT_SUBMITTED_EVENT, ContactForm } from "@/components/ContactForm";
 
 type ChatRecord = {
   id: string;
   messages: UIMessage[];
+};
+
+type ContactSubmittedDetail = {
+  ok: true;
+  sessionId: string;
+  chatId: string;
+  prompt: string;
 };
 
 function messageText(message: UIMessage) {
@@ -36,16 +30,19 @@ function ChatConversation({
   chatId,
   sessionId,
   initialMessages,
-  onSettled
+  queuedPrompt,
+  onQueuedPromptSent
 }: {
   chatId: string;
   sessionId: string;
   initialMessages: UIMessage[];
-  onSettled: () => void;
+  queuedPrompt: string | null;
+  onQueuedPromptSent: () => void;
 }) {
   const [input, setInput] = useState("");
   const [retryCount, setRetryCount] = useState(0);
   const chatRef = useRef<ReturnType<typeof useChat> | null>(null);
+  const pendingPromptRef = useRef<string | null>(null);
 
   const transport = useMemo(
     () =>
@@ -84,11 +81,25 @@ function ChatConversation({
     },
     onFinish: () => {
       setRetryCount(0);
-      onSettled();
     }
   });
 
   chatRef.current = chat;
+
+  useEffect(() => {
+    if (!queuedPrompt) return;
+    pendingPromptRef.current = queuedPrompt;
+  }, [queuedPrompt]);
+
+  useEffect(() => {
+    const prompt = pendingPromptRef.current;
+    if (!prompt || chat.messages.length > 0) return;
+    if (chat.status === "submitted" || chat.status === "streaming") return;
+
+    pendingPromptRef.current = null;
+    onQueuedPromptSent();
+    void chat.sendMessage({ text: prompt });
+  }, [chat, chat.messages.length, chat.status, onQueuedPromptSent]);
 
   async function submit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
@@ -136,82 +147,67 @@ function ChatConversation({
 }
 
 export function Chatbot() {
+  const pathname = usePathname();
+  const router = useRouter();
   const [sessionId, setSessionId] = useState<string | null>(null);
   const [chatId, setChatId] = useState<string | null>(null);
-  const [chatList, setChatList] = useState<ChatSummary[]>([]);
   const [initialMessages, setInitialMessages] = useState<UIMessage[]>([]);
+  const [queuedPrompt, setQueuedPrompt] = useState<string | null>(null);
   const [open, setOpen] = useState(false);
+  const [visible, setVisible] = useState(false);
   const [closing, setClosing] = useState(false);
-  const [loadingShell, setLoadingShell] = useState(true);
+  const [loadingShell, setLoadingShell] = useState(false);
   const modalRef = useRef<HTMLDivElement | null>(null);
-
-  async function refreshChats(nextSessionId = sessionId) {
-    if (!nextSessionId) return;
-    const response = await fetch(`/api/sessions/${nextSessionId}/chats`);
-    const data = (await response.json()) as { chats: ChatSummary[] };
-    setChatList(data.chats);
-  }
 
   async function loadChat(nextChatId: string) {
     const response = await fetch(`/api/chats/${nextChatId}`);
     const data = (await response.json()) as { chat: ChatRecord };
     setInitialMessages(data.chat.messages);
     setChatId(nextChatId);
-    setStoredActiveChatId(nextChatId);
   }
 
-  async function createChat(nextSessionId = sessionId) {
-    if (!nextSessionId) return;
-    const response = await fetch(`/api/sessions/${nextSessionId}/chats`, { method: "POST" });
-    const data = (await response.json()) as { chatId: string };
-    setInitialMessages([]);
-    setChatId(data.chatId);
-    setStoredActiveChatId(data.chatId);
-    await refreshChats(nextSessionId);
+  async function openChatSession(nextSessionId: string, prompt?: string) {
+    setLoadingShell(true);
+    try {
+      const response = await fetch(`/api/sessions/${nextSessionId}/chats`, { method: "POST" });
+      const data = (await response.json()) as { chatId: string };
+      await loadChat(data.chatId);
+      setQueuedPrompt(prompt ?? null);
+    } finally {
+      setLoadingShell(false);
+    }
   }
 
   useEffect(() => {
-    let cancelled = false;
-
-    async function boot() {
-      const storedSessionId = getStoredSessionId();
-      const response = await fetch("/api/sessions", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          sessionId: storedSessionId,
-          landingPage: window.location.pathname
-        })
-      });
-      const data = (await response.json()) as { sessionId: string };
-
-      if (cancelled) return;
-
-      setStoredSessionId(data.sessionId);
-      setSessionId(data.sessionId);
-
-      const chatsResponse = await fetch(`/api/sessions/${data.sessionId}/chats`);
-      const chatsData = (await chatsResponse.json()) as { chats: ChatSummary[] };
-      const storedChatId = getStoredActiveChatId();
-      const selected = chatsData.chats.find((item) => item.id === storedChatId) ?? chatsData.chats[0];
-
-      if (cancelled) return;
-
-      setChatList(chatsData.chats);
-
-      if (selected) {
-        await loadChat(selected.id);
-      } else {
-        await createChat(data.sessionId);
-      }
-
-      setLoadingShell(false);
+    const storedSessionId = getStoredSessionId();
+    if (storedSessionId) {
+      setSessionId(storedSessionId);
     }
+  }, []);
 
-    void boot();
-    return () => {
-      cancelled = true;
+  useEffect(() => {
+    const onContactSubmitted = (event: Event) => {
+      const detail = (event as CustomEvent<ContactSubmittedDetail>).detail;
+      if (!detail?.sessionId || !detail?.chatId) return;
+
+      setStoredSessionId(detail.sessionId);
+      setSessionId(detail.sessionId);
+      setClosing(false);
+      setOpen(true);
+      setLoadingShell(true);
+
+      void (async () => {
+        try {
+          await loadChat(detail.chatId);
+          setQueuedPrompt(detail.prompt);
+        } finally {
+          setLoadingShell(false);
+        }
+      })();
     };
+
+    window.addEventListener(CONTACT_SUBMITTED_EVENT, onContactSubmitted);
+    return () => window.removeEventListener(CONTACT_SUBMITTED_EVENT, onContactSubmitted);
   }, []);
 
   useEffect(() => {
@@ -223,83 +219,121 @@ export function Chatbot() {
     return () => window.removeEventListener("keydown", onKey);
   }, [open]);
 
+  useEffect(() => {
+    if (!open) {
+      setVisible(false);
+      return;
+    }
+
+    const frame = window.requestAnimationFrame(() => {
+      setVisible(true);
+    });
+
+    return () => window.cancelAnimationFrame(frame);
+  }, [open]);
+
   function openModal() {
+    if (open) {
+      closeModal();
+      return;
+    }
+
     setClosing(false);
     setOpen(true);
+    const existingSessionId = sessionId ?? getStoredSessionId();
+    if (!existingSessionId) return;
+    setSessionId(existingSessionId);
+    if (chatId && sessionId === existingSessionId) return;
+    void openChatSession(existingSessionId);
   }
 
   function closeModal() {
     setClosing(true);
+    setVisible(false);
     window.setTimeout(() => {
       setOpen(false);
       setClosing(false);
     }, 150);
   }
 
+  function goToBookCall() {
+    closeModal();
+
+    if (pathname === "/") {
+      document.getElementById("book-call")?.scrollIntoView({ behavior: "smooth", block: "start" });
+      return;
+    }
+
+    if (pathname === "/contact") {
+      document.getElementById("book-call")?.scrollIntoView({ behavior: "smooth", block: "start" });
+      return;
+    }
+
+    router.push("/#book-call");
+  }
+
   return (
     <div className="chatbot-root">
       <button className="chat-launcher" onClick={openModal} aria-label="Open Homeview assistant">
         <MessageCircle size={22} />
-        <span>Ask Homie</span>
+        <span>Ask Homeview</span>
       </button>
 
       {open ? (
-        <div
-          ref={modalRef}
-          className={`chat-modal t-modal ${closing ? "is-closing" : "is-open"}`}
-          role="dialog"
-          aria-modal="false"
-          aria-label="Homeview assistant"
-        >
-          <div className="chat-header">
-            <div>
-              <span className="eyebrow">AI assistant</span>
-              <h2>Property scan chats</h2>
+        sessionId ? (
+          <div
+            ref={modalRef}
+            className={`chat-modal t-modal ${closing ? "is-closing" : visible ? "is-open" : ""}`}
+            role="dialog"
+            aria-modal="false"
+            aria-label="Homeview assistant"
+          >
+            <div className="chat-header">
+              <div>
+                <h2>Homeview AI Assistant</h2>
+              </div>
+              <button onClick={closeModal} aria-label="Close chat">
+                <X size={18} />
+              </button>
             </div>
-            <button onClick={closeModal} aria-label="Close chat">
+
+            <div className="chat-actions">
+              <button type="button" onClick={goToBookCall}>
+                <Calendar size={15} /> Book 15 min
+              </button>
+              <a href="mailto:hello@homeview.ai">
+                <Mail size={15} /> Email
+              </a>
+            </div>
+
+            <div className="chat-workspace">
+              {loadingShell ? <div className="chat-loading">Loading conversation...</div> : null}
+              {chatId && !loadingShell ? (
+                <ChatConversation
+                  key={chatId}
+                  chatId={chatId}
+                  sessionId={sessionId}
+                  initialMessages={initialMessages}
+                  queuedPrompt={queuedPrompt}
+                  onQueuedPromptSent={() => setQueuedPrompt(null)}
+                />
+              ) : null}
+            </div>
+          </div>
+        ) : (
+          <div
+            ref={modalRef}
+            className={`chat-modal chat-modal-gated t-modal ${closing ? "is-closing" : visible ? "is-open" : ""}`}
+            role="dialog"
+            aria-modal="false"
+            aria-label="Contact Homeview"
+          >
+            <button className="chat-gated-close" onClick={closeModal} aria-label="Close contact form">
               <X size={18} />
             </button>
+            <ContactForm />
           </div>
-
-          <div className="chat-actions">
-            <button type="button" onClick={() => void createChat()} disabled={!sessionId}>
-              <Plus size={15} /> New chat
-            </button>
-            <a href={calUrl} target="_blank" rel="noreferrer">
-              <Calendar size={15} /> Book 15 min
-            </a>
-            <a href="mailto:hello@homeview.ai">
-              <Mail size={15} /> Email
-            </a>
-          </div>
-
-          <div className="chat-workspace">
-            <aside className="chat-list" aria-label="Chat history">
-              {loadingShell ? <p>Loading...</p> : null}
-              {chatList.map((item) => (
-                <button
-                  className={item.id === chatId ? "is-active" : ""}
-                  key={item.id}
-                  onClick={() => void loadChat(item.id)}
-                  type="button"
-                >
-                  <strong>{item.title || "New chat"}</strong>
-                  <span>{item.lastMessagePreview || "No messages yet"}</span>
-                </button>
-              ))}
-            </aside>
-
-            {chatId && sessionId ? (
-              <ChatConversation
-                key={chatId}
-                chatId={chatId}
-                sessionId={sessionId}
-                initialMessages={initialMessages}
-                onSettled={() => void refreshChats()}
-              />
-            ) : null}
-          </div>
-        </div>
+        )
       ) : null}
     </div>
   );

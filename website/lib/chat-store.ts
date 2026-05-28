@@ -77,6 +77,22 @@ export async function touchSession(sessionId: string) {
   `;
 }
 
+export async function findSessionIdByEmail(email: string) {
+  const normalizedEmail = email.trim().toLowerCase();
+  if (!normalizedEmail) return null;
+
+  const rows = await sql`
+    select si.session_id
+    from session_identities si
+    left join visitor_sessions vs on vs.id = si.session_id
+    where lower(si.email) = ${normalizedEmail}
+    order by vs.last_seen_at desc nulls last, si.created_at desc nulls last
+    limit 1
+  `;
+
+  return (rows[0]?.session_id as string | undefined) ?? null;
+}
+
 export async function ensureChat({
   chatId,
   sessionId,
@@ -95,6 +111,18 @@ export async function ensureChat({
 }
 
 export async function createChat(sessionId: string) {
+  const existing = await sql`
+    select id
+    from chat_threads
+    where session_id = ${sessionId}
+    order by updated_at desc
+    limit 1
+  `;
+
+  if (existing.length > 0) {
+    return existing[0].id as string;
+  }
+
   const id = createChatId();
   await ensureChat({ chatId: id, sessionId, title: "New chat" });
   return id;

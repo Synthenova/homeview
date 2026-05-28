@@ -161,7 +161,7 @@ export default function HomePage() {
         </div>
       </AnimatedSection>
 
-      <AnimatedSection className="cal-section section-page" aria-label="Book a Homeview consultation">
+      <AnimatedSection className="cal-section section-page" id="book-call" aria-label="Book a Homeview consultation">
         <div className="section-kicker" data-animate>
           <p className="eyebrow">Book a call</p>
           <h2>See if Homeview fits your next property.</h2>

@@ -28,7 +28,7 @@ export default function ContactPage() {
           <ContactForm />
         </div>
       </AnimatedSection>
-      <AnimatedSection className="cal-section section-page">
+      <AnimatedSection className="cal-section section-page" id="book-call">
         <div className="section-kicker" data-animate>
           <p className="eyebrow">Book a call</p>
           <h2>Talk through the fastest capture path.</h2>

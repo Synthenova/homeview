@@ -18,3 +18,30 @@ export function getStoredActiveChatId() {
 export function setStoredActiveChatId(chatId: string) {
   window.localStorage.setItem(ACTIVE_CHAT_STORAGE_KEY, chatId);
 }
+
+export async function ensureStoredSessionId(options?: {
+  email?: string;
+  landingPage?: string;
+}) {
+  const existingSessionId = getStoredSessionId();
+  if (existingSessionId && !options?.email) return existingSessionId;
+
+  const response = await fetch("/api/sessions", {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({
+      sessionId: existingSessionId,
+      email: options?.email ?? null,
+      landingPage:
+        options?.landingPage ?? (typeof window === "undefined" ? null : window.location.pathname)
+    })
+  });
+
+  if (!response.ok) {
+    throw new Error("Failed to create session.");
+  }
+
+  const data = (await response.json()) as { sessionId: string };
+  setStoredSessionId(data.sessionId);
+  return data.sessionId;
+}
