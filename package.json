@@ -12,8 +12,12 @@
     "dev:crm": "npm run dev --workspace crm",
     "build:crm": "npm run build --workspace crm",
     "db:migrate": "node --env-file=.env scripts/migrate.mjs",
+    "smoke:agent": "node --env-file=.env scripts/smoke-agent-workspace.mjs",
     "test:ai-gateway": "npm run test:ai-gateway --workspace website",
     "smoke:all": "npm run smoke:all --workspace website",
     "smoke:http": "node --env-file=.env scripts/smoke-website-http.mjs"
+  },
+  "devDependencies": {
+    "wrangler": "^4.95.0"
   }
 }

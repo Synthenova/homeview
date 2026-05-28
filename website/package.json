@@ -8,6 +8,7 @@
     "start": "next start",
     "lint": "next lint",
     "test:ai-gateway": "node --env-file=../.env scripts/test-ai-gateway.mjs",
+    "test:pdf-providers": "node --env-file=../.env scripts/test-pdf-providers.mjs",
     "smoke:streaming": "node --env-file=../.env scripts/smoke-streaming.mjs",
     "smoke:db": "node --env-file=../.env scripts/smoke-db-persistence.mjs",
     "smoke:resumable": "node --env-file=../.env scripts/smoke-resumable-stream.mjs",

@@ -3,7 +3,7 @@ import { canCreateUsers, getCurrentUser } from "@/lib/auth";
 
 const links = [
   { href: "/", label: "Dashboard" },
-  { href: "/sessions", label: "Sessions" },
+  { href: "/agent", label: "Agent" },
   { href: "/chats", label: "Chats" },
   { href: "/contacts", label: "Contacts" },
   { href: "/users", label: "Users", managerOnly: true }

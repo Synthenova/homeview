@@ -1,5 +1,7 @@
 import { generateId, type UIMessage } from "ai";
 import { sql } from "./db";
+import { ensureCrmContactProfile } from "../../shared/crm-contacts";
+import { estimateUsageCostUsd } from "../../shared/model-pricing";
 
 export type ChatSummary = {
   id: string;
@@ -327,6 +329,7 @@ export async function saveUsage({
       input_tokens,
       output_tokens,
       total_tokens,
+      estimated_cost_usd,
       raw_usage
     )
     values (
@@ -337,6 +340,7 @@ export async function saveUsage({
       ${usage.inputTokens ?? null},
       ${usage.outputTokens ?? null},
       ${usage.totalTokens ?? null},
+      ${estimateUsageCostUsd(model, usage)},
       ${sql.json(usage as never)}
     )
   `;
@@ -356,6 +360,11 @@ export async function saveContactQuery({
   message: string;
 }) {
   await sql.begin(async (tx) => {
+    await ensureCrmContactProfile(tx, {
+      email,
+      displayName: name ?? null
+    });
+
     await tx`
       insert into contact_queries (session_id, name, email, project_type, message)
       values (${sessionId ?? null}, ${name ?? null}, ${email}, ${projectType ?? null}, ${message})
