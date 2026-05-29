@@ -18,8 +18,9 @@ export default async function ChatsPage() {
       <section className="crm-panel">
         <div className="crm-table">
           {chats.map((chat) => (
-            <Link href={`/chats/${chat.id}`} className="crm-row" key={chat.id}>
+            <Link href={`/chats/${chat.id}`} className="crm-row crm-chats-row" key={chat.id}>
               <span>{chat.title || chat.id}</span>
+              <span className="crm-muted-cell">{chat.contact_email || "—"}</span>
               <span>{chat.message_count} messages</span>
               <span>{chat.status}</span>
               <span>${Number(chat.estimated_cost_usd ?? 0).toFixed(4)}</span>

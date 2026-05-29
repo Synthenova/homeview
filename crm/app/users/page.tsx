@@ -27,14 +27,14 @@ export default async function UsersPage() {
         </div>
         <span className="crm-pill">{actor.role.replace("_", " ")}</span>
       </header>
-      <div className="crm-grid">
-        <section className="crm-panel">
+      <div className="crm-grid crm-users-grid">
+        <section className="crm-panel crm-users-create-panel">
           <div className="panel-head">
             <h3>Create login</h3>
           </div>
           <UserCreateForm />
         </section>
-        <section className="crm-panel">
+        <section className="crm-panel crm-users-list-panel">
           <div className="panel-head">
             <h3>Current access</h3>
           </div>
@@ -42,7 +42,6 @@ export default async function UsersPage() {
             <div className="crm-row user-row super-admin-row">
               <span>
                 <strong>{process.env.CRM_SUPER_ADMIN_EMAIL || "Missing CRM_SUPER_ADMIN_EMAIL"}</strong>
-                <em>env managed</em>
               </span>
               <span>super admin</span>
               <span>Cannot be deleted</span>

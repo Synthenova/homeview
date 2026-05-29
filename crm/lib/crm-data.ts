@@ -67,18 +67,24 @@ export async function getSession(id: string) {
 
 export async function getChats() {
   return sql`
-    select *
-    from crm_chat_summaries
-    order by updated_at desc
+    select
+      c.*,
+      s.contact_email
+    from crm_chat_summaries c
+    left join crm_session_summaries s on s.id = c.session_id
+    order by c.updated_at desc
     limit 100
   `;
 }
 
 export async function getChat(id: string) {
   const [chat] = await sql`
-    select *
-    from crm_chat_summaries
-    where id = ${id}
+    select
+      c.*,
+      s.contact_email
+    from crm_chat_summaries c
+    left join crm_session_summaries s on s.id = c.session_id
+    where c.id = ${id}
   `;
 
   const messages = await sql`

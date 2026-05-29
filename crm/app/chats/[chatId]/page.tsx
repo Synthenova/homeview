@@ -1,6 +1,7 @@
 import { notFound } from "next/navigation";
 import { CrmShell } from "@/components/CrmShell";
 import { getChat } from "@/lib/crm-data";
+import { truncateWords } from "@/lib/format";
 
 export const dynamic = "force-dynamic";
 
@@ -15,7 +16,9 @@ export default async function ChatPage({ params }: { params: Promise<{ chatId: s
       <header className="crm-topbar">
         <div>
           <p className="eyebrow">Conversation</p>
-          <h2>{chat.title || chat.id}</h2>
+          <h2 className="crm-chat-detail-title" title={chat.title || chat.id}>
+            {truncateWords(chat.title || chat.id)}
+          </h2>
         </div>
         <span className="crm-pill">{chat.status}</span>
       </header>
@@ -33,16 +36,16 @@ export default async function ChatPage({ params }: { params: Promise<{ chatId: s
             ))}
           </div>
         </section>
-        <section className="crm-panel">
+        <section className="crm-panel crm-runs-panel">
           <div className="panel-head">
             <h3>Runs</h3>
           </div>
-          <div className="crm-table">
+          <div className="crm-runs-list">
             {runs.map((run) => (
-              <div className="crm-row" key={run.id}>
-                <span>{run.status}</span>
-                <span>{run.model || "model"}</span>
-                <span>{run.error || "ok"}</span>
+              <div className="crm-runs-row" key={run.id}>
+                <span className="crm-run-status">{run.status}</span>
+                <span className="crm-run-model">{run.model || "—"}</span>
+                <span className="crm-run-result">{run.error || "ok"}</span>
               </div>
             ))}
           </div>

@@ -1,9 +1,12 @@
+import { defaultStatusColorForName, resolveStatusColor } from "./crm-status-colors";
+
 type SqlLike = any;
 
 export type CrmStatusDefinition = {
   name: string;
   label: string;
   sortOrder: number;
+  color: string;
 };
 
 export type CrmTag = {
@@ -134,16 +137,18 @@ export async function listCrmStatuses(sql: SqlLike): Promise<CrmStatusDefinition
     name: string;
     label: string;
     sort_order: number;
+    color: string | null;
   }>`
-    select name, label, sort_order
+    select name, label, sort_order, color
     from crm_contact_statuses
     order by sort_order asc, lower(label) asc
-  `) as Array<{ name: string; label: string; sort_order: number }>;
+  `) as Array<{ name: string; label: string; sort_order: number; color: string | null }>;
 
-  return rows.map((row: { name: string; label: string; sort_order: number }) => ({
+  return rows.map((row: { name: string; label: string; sort_order: number; color: string | null }) => ({
     name: row.name,
     label: row.label,
-    sortOrder: row.sort_order
+    sortOrder: row.sort_order,
+    color: resolveStatusColor(row.name, row.color)
   }));
 }
 
@@ -157,26 +162,31 @@ export async function createCrmStatus(
   }
 
   const label = input.label?.trim() || titleCaseFromSlug(name);
+  const color = defaultStatusColorForName(name);
+
   const [row] = await sql<{
     name: string;
     label: string;
     sort_order: number;
+    color: string | null;
   }>`
-    insert into crm_contact_statuses (name, label, sort_order)
+    insert into crm_contact_statuses (name, label, sort_order, color)
     values (
       ${name},
       ${label},
-      ${input.sortOrder ?? 999}
+      ${input.sortOrder ?? 999},
+      ${color}
     )
     on conflict (name) do update set
       label = excluded.label
-    returning name, label, sort_order
+    returning name, label, sort_order, color
   `;
 
   return {
     name: row.name,
     label: row.label,
-    sortOrder: row.sort_order
+    sortOrder: row.sort_order,
+    color: resolveStatusColor(row.name, row.color)
   };
 }
 
